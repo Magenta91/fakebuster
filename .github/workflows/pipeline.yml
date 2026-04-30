@@ -1,0 +1,22 @@
+name: Run News Pipeline
+
+on:
+  schedule:
+    - cron: "0 3,15 * * *"   # Runs at 03:00 and 15:00 UTC (08:30 and 20:30 IST)
+  workflow_dispatch:           # Allow manual trigger from GitHub UI
+
+jobs:
+  trigger-pipeline:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Trigger pipeline run
+        run: |
+          curl -X POST "${{ secrets.BACKEND_URL }}/pipeline/run" \
+            -H "Content-Type: application/json" \
+            --fail
+
+      - name: Trigger fact-check refresh
+        run: |
+          curl -X POST "${{ secrets.BACKEND_URL }}/pipeline/refresh-factchecks" \
+            -H "Content-Type: application/json" \
+            --fail
